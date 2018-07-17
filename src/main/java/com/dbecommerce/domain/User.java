@@ -14,8 +14,8 @@ import java.util.List;
 @Table(name = "USERS")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -36,7 +36,9 @@ public class User {
 
     @OneToMany(
             targetEntity = Order.class,
-            mappedBy = "user"
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY
     )
     private List<Order> orders = new ArrayList<>();
 

@@ -29,7 +29,8 @@ public class Producer {
     @OneToMany(
             targetEntity = Product.class,
             mappedBy = "producer",
-            cascade = CascadeType.ALL
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY
     )
     private List<Product> products = new ArrayList<>();
 }

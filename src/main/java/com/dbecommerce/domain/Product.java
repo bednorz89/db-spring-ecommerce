@@ -7,9 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -28,14 +26,12 @@ public class Product {
     @Column(name = "PRODUCT_NAME")
     private String name;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @NotNull
+    @Column(name = "PRICE")
+    private BigDecimal price;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "PRODUCER_ID")
     private Producer producer;
-
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "productsInCart")
-    private List<ShoppingCart> inCarts = new ArrayList<>();
-
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "products")
-    private List<Order> ordered = new ArrayList<>();
 
 }

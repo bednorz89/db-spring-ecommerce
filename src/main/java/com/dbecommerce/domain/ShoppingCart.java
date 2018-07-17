@@ -22,11 +22,10 @@ public class ShoppingCart {
     @Column(name = "SHOPPING_CART_ID")
     private Long id;
 
-    @ManyToMany
-    @JoinTable(
-            name = "JOIN_PRODUCTS_CARTS",
-            joinColumns = {@JoinColumn(name = "SHOPPING_CART_ID", referencedColumnName = "SHOPPING_CART_ID")},
-            inverseJoinColumns = {@JoinColumn(name = "PRODUCT_ID", referencedColumnName = "PRODUCT_ID")}
+    @OneToMany(
+            targetEntity = Item.class,
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER
     )
-    private List<Product> productsInCart = new ArrayList<>();
+    private List<Item> ItemsInCart = new ArrayList<>();
 }

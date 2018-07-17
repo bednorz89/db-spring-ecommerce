@@ -26,18 +26,17 @@ public class Order {
     @JoinColumn(name = "USER_ID")
     private User user;
 
-    @ManyToMany
-    @JoinTable(
-            name = "JOIN_PRODUCTS_ORDERS",
-            joinColumns = {@JoinColumn(name = "ORDER_ID", referencedColumnName = "ORDER_ID")},
-            inverseJoinColumns = {@JoinColumn(name = "PRODUCT_ID", referencedColumnName = "PRODUCT_ID")}
+    @OneToMany(
+            targetEntity = Item.class,
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER
     )
-    private List<Product> products = new ArrayList<>();
+    private List<Item> itemsInOrder = new ArrayList<>();
 
-    private boolean paid;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "order")
+    private Payment payment;
 
-    private boolean shipped;
-
+    @Column(name = "CANCELED")
     private boolean canceled;
 
 }
