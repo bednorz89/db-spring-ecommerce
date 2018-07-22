@@ -1,17 +1,17 @@
 package com.dbecommerce.repository;
 
-import com.dbecommerce.domain.User;
+import com.dbecommerce.domain.Payment;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface UserRepository extends CrudRepository<User, Long> {
+public interface PaymentRepository extends CrudRepository<Payment, Long> {
 
     @Override
-    List<User> findAll();
+    Payment save(Payment payment);
 
     @Override
-    User save(User user);
+    List<Payment> findAll();
 }

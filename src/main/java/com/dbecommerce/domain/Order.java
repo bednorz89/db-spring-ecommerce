@@ -19,7 +19,6 @@ public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ORDER_ID")
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -31,12 +30,12 @@ public class Order {
             cascade = CascadeType.ALL,
             fetch = FetchType.EAGER
     )
-    private List<Item> itemsInOrder = new ArrayList<>();
+    private List<Item> items = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "order")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Payment payment;
 
     @Column(name = "CANCELED")
-    private boolean canceled;
+    private boolean canceled = false;
 
 }

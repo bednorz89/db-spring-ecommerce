@@ -19,7 +19,6 @@ public class ShoppingCart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "SHOPPING_CART_ID")
     private Long id;
 
     @OneToMany(
@@ -27,5 +26,5 @@ public class ShoppingCart {
             cascade = CascadeType.ALL,
             fetch = FetchType.EAGER
     )
-    private List<Item> ItemsInCart = new ArrayList<>();
+    private List<Item> items = new ArrayList<>();
 }

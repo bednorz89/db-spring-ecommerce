@@ -8,7 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ITEMS_IN_CART")
+@Table(name = "ITEMS")
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter

@@ -7,8 +7,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "USERS")
@@ -33,13 +31,5 @@ public class User {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "SHOPPING_CART_ID")
     private ShoppingCart shoppingCart;
-
-    @OneToMany(
-            targetEntity = Order.class,
-            mappedBy = "user",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY
-    )
-    private List<Order> orders = new ArrayList<>();
 
 }

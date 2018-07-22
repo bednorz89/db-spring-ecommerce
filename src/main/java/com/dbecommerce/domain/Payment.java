@@ -1,5 +1,6 @@
 package com.dbecommerce.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,10 +21,11 @@ public class Payment {
     private Long id;
 
     @Column(name = "IS_PAID")
-    private Boolean paid;
+    private Boolean paid = false;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "payment")
     @JoinColumn(name = "ORDER_ID")
+    @JsonIgnore
     private Order order;
 
 }
