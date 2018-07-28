@@ -1,7 +1,9 @@
 package com.dbecommerce.controller;
 
-import com.dbecommerce.domain.Producer;
-import com.dbecommerce.domain.Product;
+import com.dbecommerce.domain.dto.ProducerDto;
+import com.dbecommerce.domain.dto.ProductDto;
+import com.dbecommerce.mapper.ProducerMapper;
+import com.dbecommerce.mapper.ProductMapper;
 import com.dbecommerce.service.ProducerService;
 import com.dbecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,28 +19,31 @@ public class ProducerController {
 
     @Autowired
     private ProducerService producerService;
-
     @Autowired
     private ProductService productService;
+    @Autowired
+    private ProducerMapper producerMapper;
+    @Autowired
+    private ProductMapper productMapper;
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Producer> getProducers() {
-        return producerService.getAllProducers();
+    public List<ProducerDto> getProducers() {
+        return producerMapper.mapToListProducerDto(producerService.getAllProducers());
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public Producer getProducer(@PathVariable("id") Long id) {
-        return producerService.getProducer(id);
+    public ProducerDto getProducer(@PathVariable("id") Long id) {
+        return producerMapper.mapToProducerDto(producerService.getProducer(id));
     }
 
     @RequestMapping(value = "/{id}/products", method = RequestMethod.GET)
-    public List<Product> getProducerAllProducts(@PathVariable("id") Long id) {
-        return productService.getProducerAllProducts(id);
+    public List<ProductDto> getProducerAllProducts(@PathVariable("id") Long id) {
+        return productMapper.mapToListProductDto(productService.getProducerAllProducts(id));
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = APPLICATION_JSON_VALUE)
-    public void createProducer(@RequestBody Producer producer) {
-        producerService.saveProducer(producer);
+    public void createProducer(@RequestBody ProducerDto producerDto) {
+        producerService.saveProducer(producerMapper.mapToProducer(producerDto));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
@@ -47,7 +52,7 @@ public class ProducerController {
     }
 
     @RequestMapping(method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
-    public Producer updateProducer(@RequestBody Producer producer) {
-        return producerService.saveProducer(producer);
+    public ProducerDto updateProducer(@RequestBody ProducerDto producerDto) {
+        return producerMapper.mapToProducerDto(producerService.saveProducer(producerMapper.mapToProducer(producerDto)));
     }
 }

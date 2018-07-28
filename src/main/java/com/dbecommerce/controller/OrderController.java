@@ -1,7 +1,9 @@
 package com.dbecommerce.controller;
 
-import com.dbecommerce.domain.Order;
-import com.dbecommerce.domain.Payment;
+import com.dbecommerce.domain.dto.OrderDto;
+import com.dbecommerce.domain.dto.PaymentDto;
+import com.dbecommerce.mapper.OrderMapper;
+import com.dbecommerce.mapper.PaymentMapper;
 import com.dbecommerce.service.OrderService;
 import com.dbecommerce.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,23 +20,26 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
-
     @Autowired
     private PaymentService paymentService;
+    @Autowired
+    private OrderMapper orderMapper;
+    @Autowired
+    private PaymentMapper paymentMapper;
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Order> getOrders() {
-        return orderService.getOrders();
+    public List<OrderDto> getOrders() {
+        return orderMapper.mapToListOrderDto(orderService.getOrders());
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public Order getOrder(@PathVariable Long id) {
-        return orderService.getOrder(id);
+    public OrderDto getOrder(@PathVariable Long id) {
+        return orderMapper.mapToOrderDto(orderService.getOrder(id));
     }
 
     @RequestMapping(value = "/{id}/payments", method = RequestMethod.PUT)
-    public Payment payForOrder(@PathVariable Long id) {
-        return paymentService.payForOrder(id);
+    public PaymentDto payForOrder(@PathVariable Long id) {
+        return paymentMapper.mapToPaymentDto(paymentService.payForOrder(id));
     }
 
 }

@@ -12,7 +12,6 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
-
     @Autowired
     private ProducerService producerService;
 
@@ -30,6 +29,7 @@ public class ProductService {
     }
 
     public Product updateProduct(Product product) {
+        product.setProducer(productRepository.findOne(product.getId()).getProducer());
         return productRepository.save(product);
     }
 

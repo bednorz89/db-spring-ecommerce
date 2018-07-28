@@ -1,6 +1,7 @@
 package com.dbecommerce.controller;
 
-import com.dbecommerce.domain.Payment;
+import com.dbecommerce.domain.dto.PaymentDto;
+import com.dbecommerce.mapper.PaymentMapper;
 import com.dbecommerce.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,15 +17,17 @@ public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
+    @Autowired
+    private PaymentMapper paymentMapper;
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Payment> getPayments() {
-        return paymentService.getPayments();
+    public List<PaymentDto> getPayments() {
+        return paymentMapper.mapToListPaymentDto(paymentService.getPayments());
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public Payment getPayment(@PathVariable Long id) {
-        return paymentService.getPayment(id);
+    public PaymentDto getPayment(@PathVariable Long id) {
+        return paymentMapper.mapToPaymentDto(paymentService.getPayment(id));
     }
 
 }

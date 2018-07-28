@@ -1,6 +1,7 @@
 package com.dbecommerce.controller;
 
-import com.dbecommerce.domain.Product;
+import com.dbecommerce.domain.dto.ProductDto;
+import com.dbecommerce.mapper.ProductMapper;
 import com.dbecommerce.service.ProductService;
 import com.dbecommerce.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,28 +17,29 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
-
     @Autowired
     private UserService userService;
+    @Autowired
+    private ProductMapper productMapper;
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Product> getProducts() {
-        return productService.getAllProducts();
+    public List<ProductDto> getProducts() {
+        return productMapper.mapToListProductDto(productService.getAllProducts());
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public Product getProduct(@PathVariable Long id) {
-        return productService.getProduct(id);
+    public ProductDto getProduct(@PathVariable Long id) {
+        return productMapper.mapToProductDto(productService.getProduct(id));
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = APPLICATION_JSON_VALUE)
-    public void createProduct(@RequestBody Product product, @RequestParam Long producerId) {
-        productService.saveProduct(product, producerId);
+    public void createProduct(@RequestBody ProductDto productDto, @RequestParam Long producerId) {
+        productService.saveProduct(productMapper.mapToProduct(productDto), producerId);
     }
 
     @RequestMapping(method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
-    public Product updateProduct(@RequestBody Product product) {
-        return productService.updateProduct(product);
+    public ProductDto updateProduct(@RequestBody ProductDto productDto) {
+        return productMapper.mapToProductDto(productService.updateProduct(productMapper.mapToProduct(productDto)));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
