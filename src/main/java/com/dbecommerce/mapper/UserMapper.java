@@ -11,7 +11,13 @@ import java.util.stream.Collectors;
 public class UserMapper {
 
     public UserDto mapToUserDto(User user) {
-        return new UserDto(user.getId(), user.getName(), user.getAddress());
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setName(user.getName());
+        userDto.setAddress(user.getAddress());
+        userDto.setUsername(user.getUsername());
+        userDto.setRole(user.getRole());
+        return userDto;
     }
 
     public User mapToUser(UserDto userDto) {
@@ -19,6 +25,8 @@ public class UserMapper {
         user.setId(userDto.getId());
         user.setName(userDto.getName());
         user.setAddress(userDto.getAddress());
+        user.setUsername(userDto.getUsername());
+        user.setPassword(userDto.getPassword());
         return user;
     }
 

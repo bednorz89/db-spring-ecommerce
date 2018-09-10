@@ -1,6 +1,7 @@
 package com.dbecommerce.repository;
 
 import com.dbecommerce.domain.Order;
+import com.dbecommerce.domain.Payment;
 import com.dbecommerce.domain.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -17,4 +18,6 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
 
     @Override
     List<Order> findAll();
+
+    Order findOrderByPayment(Payment payment);
 }

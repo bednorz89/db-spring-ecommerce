@@ -7,6 +7,7 @@ import com.dbecommerce.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
@@ -48,13 +49,13 @@ public class ProductController {
     }
 
     @RequestMapping(value = "/{id}/carts", method = RequestMethod.PUT)
-    public void addProductToCart(@PathVariable Long id, @RequestParam Long userId, @RequestParam Integer quantity) {
-        userService.addProductToCart(id, userId, quantity);
+    public void addProductToCart(@PathVariable Long id, @RequestParam Integer quantity, Principal principal) {
+        userService.addProductToCart(id, userService.getUserByUsername(principal.getName()).getId(), quantity);
     }
 
     @RequestMapping(value = "/{id}/carts", method = RequestMethod.DELETE)
-    public void deleteProductFromCart(@PathVariable Long id, @RequestParam Long userId) {
-        userService.deleteProductFromCart(id, userId);
+    public void deleteProductFromCart(@PathVariable Long id, Principal principal) {
+        userService.deleteProductFromCart(id, userService.getUserByUsername(principal.getName()).getId());
     }
 
 }

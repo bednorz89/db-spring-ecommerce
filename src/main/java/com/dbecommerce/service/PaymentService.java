@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PaymentService {
@@ -27,6 +28,13 @@ public class PaymentService {
 
     public Payment getPayment(Long id) {
         return paymentRepository.findOne(id);
+    }
+
+    public List<Payment> getUserPayments(Long id) {
+        return orderService.getOrders().stream()
+                .filter(o -> o.getUser().getId() == id)
+                .map(o -> o.getPayment())
+                .collect(Collectors.toList());
     }
 
 }

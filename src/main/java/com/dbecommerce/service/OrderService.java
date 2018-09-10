@@ -37,4 +37,8 @@ public class OrderService {
         return orderRepository.findOne(id);
     }
 
+    public Order findOrderByPayment(Payment payment) {
+        return orderRepository.findOrderByPayment(payment);
+    }
+
 }

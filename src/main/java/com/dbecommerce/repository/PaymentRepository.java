@@ -14,4 +14,5 @@ public interface PaymentRepository extends CrudRepository<Payment, Long> {
 
     @Override
     List<Payment> findAll();
+
 }

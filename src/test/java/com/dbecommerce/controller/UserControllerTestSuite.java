@@ -65,7 +65,10 @@ public class UserControllerTestSuite {
     @Test
     public void shouldUpdateUser() throws Exception {
         //Giver
-        UserDto user = new UserDto(1L, "David", "Rome");
+        UserDto user = new UserDto();
+        user.setId(1L);
+        user.setName("David");
+        user.setAddress("Rome");
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(user);
         //When & //Then

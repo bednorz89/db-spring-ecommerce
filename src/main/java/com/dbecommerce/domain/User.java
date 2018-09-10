@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -21,15 +22,25 @@ public class User {
     private Long id;
 
     @NotNull
-    @Column(name = "USER_NAME")
+    @Column(name = "NAME")
     private String name;
 
     @NotNull
-    @Column(name = "USER_ADDRESS")
+    @Column(name = "ADDRESS")
     private String address;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "SHOPPING_CART_ID")
     private ShoppingCart shoppingCart;
+
+    @Column(name = "USERNAME", unique = true)
+    @NotNull
+    private String username;
+
+    @Column(name = "PASSWORD")
+    private String password;
+
+    @Column(name = "ROLE")
+    private String role = "ROLE_USER"; //temp
 
 }
