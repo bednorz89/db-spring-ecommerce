@@ -1,5 +1,6 @@
 package com.dbecommerce.controller;
 
+import com.dbecommerce.domain.Role;
 import com.dbecommerce.domain.dto.ItemDto;
 import com.dbecommerce.domain.dto.OrderDto;
 import com.dbecommerce.domain.dto.UserDto;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Collection;
 import java.util.List;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
@@ -41,8 +43,8 @@ public class UserController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<UserDto> getUser(@PathVariable Long id, Principal principal) {
         Long userId = userService.getUserByUsername(principal.getName()).getId();
-        String role = userService.getUserByUsername(principal.getName()).getRole();
-        if (role.equals("ROLE_USER") && userId != id) {
+        Collection<Role> roles = userService.getUserByUsername(principal.getName()).getRole();
+        if (roles.contains(Role.ROLE_USER) && userId != id && !roles.contains(Role.ROLE_ADMIN)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } else {
             return new ResponseEntity<>(userMapper.mapToUserDto(userService.getUser(id)), HttpStatus.FOUND);
@@ -57,8 +59,8 @@ public class UserController {
     @RequestMapping(method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, Principal principal) {
         Long userId = userService.getUserByUsername(principal.getName()).getId();
-        String role = userService.getUserByUsername(principal.getName()).getRole();
-        if (role.equals("ROLE_USER") && userId != userDto.getId()) {
+        Collection<Role> roles = userService.getUserByUsername(principal.getName()).getRole();
+        if (roles.contains(Role.ROLE_USER) && userId != userDto.getId()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } else {
             return new ResponseEntity<>(userMapper.mapToUserDto(userService.saveUser(userMapper.mapToUser(userDto))), HttpStatus.OK);

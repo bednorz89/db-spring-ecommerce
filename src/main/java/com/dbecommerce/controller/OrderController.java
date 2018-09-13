@@ -1,6 +1,7 @@
 package com.dbecommerce.controller;
 
 import com.dbecommerce.domain.Order;
+import com.dbecommerce.domain.Role;
 import com.dbecommerce.domain.dto.OrderDto;
 import com.dbecommerce.domain.dto.PaymentDto;
 import com.dbecommerce.mapper.OrderMapper;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -37,8 +39,8 @@ public class OrderController {
     @RequestMapping(method = RequestMethod.GET)
     public List<OrderDto> getOrders(Principal principal) {
         Long userId = userService.getUserByUsername(principal.getName()).getId();
-        String role = userService.getUserByUsername(principal.getName()).getRole();
-        if (role.equals("ROLE_USER")) {
+        Collection<Role> roles = userService.getUserByUsername(principal.getName()).getRole();
+        if (roles.contains(Role.ROLE_USER)) {
             return orderMapper.mapToListOrderDto(orderService.getUserAllOrders(userId));
         } else {
             return orderMapper.mapToListOrderDto(orderService.getOrders());
@@ -47,9 +49,9 @@ public class OrderController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<OrderDto> getOrder(@PathVariable Long id, Principal principal) {
-        String role = userService.getUserByUsername(principal.getName()).getRole();
+        Collection<Role> roles = userService.getUserByUsername(principal.getName()).getRole();
         Order order = orderService.getOrder(id);
-        if ((role.equals("ROLE_USER") && order.getUser().equals(userService.getUserByUsername(principal.getName()))) || role.equals("ROLE_ADMIN")) {
+        if ((roles.contains(Role.ROLE_USER) && order.getUser().equals(userService.getUserByUsername(principal.getName()))) || roles.contains(Role.ROLE_ADMIN)) {
             return new ResponseEntity<>(orderMapper.mapToOrderDto(order), HttpStatus.FOUND);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

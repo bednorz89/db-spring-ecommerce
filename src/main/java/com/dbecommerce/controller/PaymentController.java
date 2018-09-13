@@ -1,6 +1,7 @@
 package com.dbecommerce.controller;
 
 import com.dbecommerce.domain.Order;
+import com.dbecommerce.domain.Role;
 import com.dbecommerce.domain.dto.PaymentDto;
 import com.dbecommerce.mapper.PaymentMapper;
 import com.dbecommerce.service.OrderService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -33,8 +35,8 @@ public class PaymentController {
     @RequestMapping(method = RequestMethod.GET)
     public List<PaymentDto> getPayments(Principal principal) {
         Long userId = userService.getUserByUsername(principal.getName()).getId();
-        String role = userService.getUserByUsername(principal.getName()).getRole();
-        if (role.equals("ROLE_USER")) {
+        Collection<Role> roles = userService.getUserByUsername(principal.getName()).getRole();
+        if (roles.contains(Role.ROLE_USER)) {
             return paymentMapper.mapToListPaymentDto(paymentService.getUserPayments(userId));
         } else {
             return paymentMapper.mapToListPaymentDto(paymentService.getPayments());
@@ -43,9 +45,9 @@ public class PaymentController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<PaymentDto> getPayment(@PathVariable Long id, Principal principal) {
-        String role = userService.getUserByUsername(principal.getName()).getRole();
+        Collection<Role> roles = userService.getUserByUsername(principal.getName()).getRole();
         Order order = orderService.findOrderByPayment(paymentService.getPayment(id));
-        if ((role.equals("ROLE_USER") && order.getUser().equals(userService.getUserByUsername(principal.getName()))) || role.equals("ROLE_ADMIN")) {
+        if ((roles.contains(Role.ROLE_USER) && order.getUser().equals(userService.getUserByUsername(principal.getName()))) || roles.contains(Role.ROLE_ADMIN)) {
             return new ResponseEntity<>(paymentMapper.mapToPaymentDto(paymentService.getPayment(id)), HttpStatus.FOUND);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

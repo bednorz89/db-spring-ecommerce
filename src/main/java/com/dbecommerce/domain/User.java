@@ -4,10 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "USERS")
@@ -40,7 +41,10 @@ public class User {
     @Column(name = "PASSWORD")
     private String password;
 
-    @Column(name = "ROLE")
-    private String role = "ROLE_USER"; //temp
+    @ElementCollection(targetClass = Role.class)
+    @JoinTable(name = "ROLES", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private List<Role> role = new ArrayList<>();
 
 }

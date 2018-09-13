@@ -1,12 +1,13 @@
 package com.dbecommerce.security;
 
+import com.dbecommerce.domain.Role;
 import com.dbecommerce.domain.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class MyUserPrincipal implements UserDetails {
@@ -32,7 +33,11 @@ public class MyUserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        final List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole()));
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (Role role : user.getRole()) {
+            String newRole = role.name();
+            authorities.add(new SimpleGrantedAuthority(newRole));
+        }
         return authorities;
     }
 
