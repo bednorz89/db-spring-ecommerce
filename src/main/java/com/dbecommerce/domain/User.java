@@ -10,6 +10,11 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+@NamedQuery(
+        name = "User.fetchUserWithRolesByUsername",
+        query = "FROM User u left join fetch u.role WHERE u.username = :USERNAME"
+)
+
 @Entity
 @Table(name = "USERS")
 @Getter

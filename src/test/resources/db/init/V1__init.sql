@@ -24,8 +24,10 @@ CREATE TABLE shopping_carts (
 
 CREATE TABLE users (
   id BIGINT(20) NOT NULL AUTO_INCREMENT,
-  user_address VARCHAR(255) NOT NULL,
-  user_name VARCHAR(255) NOT NULL,
+  address VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  password VARCHAR(255),
+  username VARCHAR(255) NOT NULL,
   shopping_cart_id BIGINT(20),
   PRIMARY KEY (`id`),
   FOREIGN KEY (shopping_cart_id) REFERENCES shopping_carts(id));
@@ -50,6 +52,11 @@ CREATE TABLE orders_items (
   FOREIGN KEY (order_id) REFERENCES orders(id),
   FOREIGN KEY (items_id) REFERENCES items(id));
 
+  CREATE TABLE roles (
+  user_id BIGINT(20) NOT NULL,
+  role VARCHAR(255) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id));
+
 CREATE TABLE shopping_carts_items (
   shopping_cart_id BIGINT(20) NOT NULL,
   items_id BIGINT(20) NOT NULL UNIQUE,
@@ -71,8 +78,12 @@ INSERT INTO items (product_id, quantity) VALUES (1, 1);
 INSERT INTO shopping_carts (id) VALUES (null);
 INSERT INTO shopping_carts (id) VALUES (null);
 
-INSERT INTO users (user_address, user_name, shopping_cart_id) VALUES ('Munich', 'David', 1);
-INSERT INTO users (user_address, user_name, shopping_cart_id) VALUES ('Moscow', 'Wladimir', 2);
+INSERT INTO users (address, name, username, password, shopping_cart_id) VALUES ('Munich', 'David', 'user1', 'pass1', 1);
+INSERT INTO users (address, name, username, password, shopping_cart_id) VALUES ('Moscow', 'Wladimir', 'user2', 'pass2', 2);
+
+INSERT INTO roles (user_id, role) VALUES (1, 'ROLE_USER');
+INSERT INTO roles (user_id, role) VALUES (2, 'ROLE_ADMIN');
+INSERT INTO roles (user_id, role) VALUES (2, 'ROLE_USER');
 
 INSERT INTO payments (is_paid) VALUES (false);
 

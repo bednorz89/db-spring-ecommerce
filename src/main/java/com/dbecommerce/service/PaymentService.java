@@ -30,9 +30,9 @@ public class PaymentService {
         return paymentRepository.findOne(id);
     }
 
-    public List<Payment> getUserPayments(Long id) {
+    public List<Payment> getUserPayments(String username) {
         return orderService.getOrders().stream()
-                .filter(o -> o.getUser().getId() == id)
+                .filter(o -> o.getUser().getUsername().equals(username))
                 .map(o -> o.getPayment())
                 .collect(Collectors.toList());
     }

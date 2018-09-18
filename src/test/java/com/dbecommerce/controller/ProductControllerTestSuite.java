@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -52,6 +54,7 @@ public class ProductControllerTestSuite {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void shouldCreateProduct() throws Exception {
         //Given
         ProductDto product = new ProductDto();
@@ -65,6 +68,7 @@ public class ProductControllerTestSuite {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void shouldUpdateProduct() throws Exception {
         //Giver
         ProductDto product = new ProductDto(2L, "WindowsXP", new BigDecimal(99));
@@ -78,6 +82,7 @@ public class ProductControllerTestSuite {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void shouldDeleteProduct() throws Exception {
         //Giver & //When & //Then
         mockMvc.perform(delete("/v1/products/{id}", 1).contentType(MediaType.APPLICATION_JSON))
@@ -85,20 +90,20 @@ public class ProductControllerTestSuite {
     }
 
     @Test
+    @WithUserDetails("user1")
     public void shouldAddProductToCart() throws Exception {
         //Giver & //When & //Then
         mockMvc.perform(put("/v1/products/{id}/carts", 19)
-                .param("userId", "1")
                 .param("quantity", "1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @WithUserDetails("user1")
     public void shouldDeleteProductFromCart() throws Exception {
         //Giver & //When & //Then
         mockMvc.perform(delete("/v1/products/{id}/carts", 19)
-                .param("userId", "1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }

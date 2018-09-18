@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,7 +30,8 @@ public class OrderControllerTestSuite {
     private MockMvc mockMvc;
 
     @Test
-    public void shouldFetchAllOrders() throws Exception {
+    @WithMockUser(roles = {"ADMIN"})
+    public void shouldAdminFetchAllOrders() throws Exception {
         //Given & //When & //Then
         mockMvc.perform(get("/v1/orders").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -43,10 +46,11 @@ public class OrderControllerTestSuite {
     }
 
     @Test
-    public void shouldFetchOrder() throws Exception {
+    @WithMockUser(roles = {"ADMIN"})
+    public void shouldAdminFetchOrder() throws Exception {
         //Given & //When & //Then
         mockMvc.perform(get("/v1/orders/{id}", 1).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isFound())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.userDto.id", is(2)))
                 .andExpect(jsonPath("$.userDto.name", is("Wladimir")))
@@ -57,6 +61,30 @@ public class OrderControllerTestSuite {
     }
 
     @Test
+    @WithUserDetails(value = "user2")
+    public void shouldUserFetchOwnOrder() throws Exception {
+        //Given & //When & //Then
+        mockMvc.perform(get("/v1/orders/{id}", 1).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isFound())
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.userDto.id", is(2)))
+                .andExpect(jsonPath("$.userDto.name", is("Wladimir")))
+                .andExpect(jsonPath("$.userDto.address", is("Moscow")))
+                .andExpect(jsonPath("$.itemsDto", hasSize(2)))
+                .andExpect(jsonPath("$.paymentDto.paid", is(false)))
+                .andExpect(jsonPath("$.canceled", is(false)));
+    }
+
+    @Test
+    @WithUserDetails(value = "user1")
+    public void shouldNotUserFetchNotOwnOrder() throws Exception {
+        //Given & //When & //Then
+        mockMvc.perform(get("/v1/orders/{id}", 1).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(value = "user2")
     public void shouldPayForOrder() throws Exception {
         //Given & //When & //Then
         mockMvc.perform(put("/v1/orders/{id}/payments", 1).contentType(MediaType.APPLICATION_JSON))

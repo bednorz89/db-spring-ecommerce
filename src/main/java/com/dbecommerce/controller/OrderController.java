@@ -12,14 +12,17 @@ import com.dbecommerce.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("v1/orders")
@@ -36,32 +39,34 @@ public class OrderController {
     @Autowired
     private UserService userService;
 
+    @Secured({"ROLE_ADMIN"})
     @RequestMapping(method = RequestMethod.GET)
-    public List<OrderDto> getOrders(Principal principal) {
-        Long userId = userService.getUserByUsername(principal.getName()).getId();
-        Collection<Role> roles = userService.getUserByUsername(principal.getName()).getRole();
-        if (roles.contains(Role.ROLE_USER)) {
-            return orderMapper.mapToListOrderDto(orderService.getUserAllOrders(userId));
-        } else {
-            return orderMapper.mapToListOrderDto(orderService.getOrders());
-        }
+    public List<OrderDto> getOrders() {
+        return orderMapper.mapToListOrderDto(orderService.getOrders());
     }
 
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<OrderDto> getOrder(@PathVariable Long id, Principal principal) {
-        Collection<Role> roles = userService.getUserByUsername(principal.getName()).getRole();
+    public ResponseEntity<OrderDto> getOrder(@PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Set<String> roles = authentication.getAuthorities().stream()
+                .map(r -> r.getAuthority())
+                .collect(Collectors.toSet());
         Order order = orderService.getOrder(id);
-        if ((roles.contains(Role.ROLE_USER) && order.getUser().equals(userService.getUserByUsername(principal.getName()))) || roles.contains(Role.ROLE_ADMIN)) {
+        if ((roles.contains(Role.ROLE_USER.name()) && order.getUser().equals(userService.getUserByUsername(username))) || roles.contains(Role.ROLE_ADMIN.name())) {
             return new ResponseEntity<>(orderMapper.mapToOrderDto(order), HttpStatus.FOUND);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
 
+    @Secured({"ROLE_USER"})
     @RequestMapping(value = "/{id}/payments", method = RequestMethod.PUT)
-    public ResponseEntity<PaymentDto> payForOrder(@PathVariable Long id, Principal principal) {
-        Long userId = userService.getUserByUsername(principal.getName()).getId();
-        if (userId == orderService.getOrder(id).getUser().getId()) {
+    public ResponseEntity<PaymentDto> payForOrder(@PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        if (orderService.getOrder(id).getUser().getUsername().equals(username)) {
             return new ResponseEntity<>(paymentMapper.mapToPaymentDto(paymentService.payForOrder(id)), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

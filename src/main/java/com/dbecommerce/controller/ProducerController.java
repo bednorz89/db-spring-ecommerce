@@ -7,6 +7,7 @@ import com.dbecommerce.mapper.ProductMapper;
 import com.dbecommerce.service.ProducerService;
 import com.dbecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,16 +42,19 @@ public class ProducerController {
         return productMapper.mapToListProductDto(productService.getProducerAllProducts(id));
     }
 
+    @Secured({"ROLE_ADMIN"})
     @RequestMapping(method = RequestMethod.POST, consumes = APPLICATION_JSON_VALUE)
     public void createProducer(@RequestBody ProducerDto producerDto) {
         producerService.saveProducer(producerMapper.mapToProducer(producerDto));
     }
 
+    @Secured({"ROLE_ADMIN"})
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public void deleteProducer(@PathVariable("id") Long id) {
         producerService.deleteProducer(id);
     }
 
+    @Secured({"ROLE_ADMIN"})
     @RequestMapping(method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
     public ProducerDto updateProducer(@RequestBody ProducerDto producerDto) {
         return producerMapper.mapToProducerDto(producerService.saveProducer(producerMapper.mapToProducer(producerDto)));

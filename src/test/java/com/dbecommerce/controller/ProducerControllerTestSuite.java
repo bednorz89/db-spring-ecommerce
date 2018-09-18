@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -50,6 +51,7 @@ public class ProducerControllerTestSuite {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void shouldCreateProducer() throws Exception {
         //Giver
         ProducerDto producer = new ProducerDto();
@@ -62,6 +64,7 @@ public class ProducerControllerTestSuite {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void shouldUpdateProducer() throws Exception {
         //Giver
         ProducerDto producer = new ProducerDto(2L, "MS");
@@ -83,6 +86,7 @@ public class ProducerControllerTestSuite {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void shouldDeleteProducer() throws Exception {
         //Giver & //When & //Then
         mockMvc.perform(delete("/v1/producers/{id}", 2).contentType(MediaType.APPLICATION_JSON))
