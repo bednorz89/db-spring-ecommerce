@@ -120,14 +120,14 @@ public class UserControllerTestSuite {
     }
 
     @Test
-    @WithUserDetails(value = "user2")
+    @WithUserDetails(value = "user1")
     public void shouldNotUserUpdateAnotherUser() throws Exception {
         //Giver
         UserDto user = new UserDto();
-        user.setId(1L);
+        user.setId(2L);
         user.setName("Michal");
         user.setAddress("Rome");
-        user.setUsername("user1");
+        user.setUsername("user2");
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(user);
         //When & //Then
@@ -141,6 +141,14 @@ public class UserControllerTestSuite {
         //Giver & //When & //Then
         mockMvc.perform(delete("/v1/users/{id}", 1).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = {"USER"})
+    public void shouldNotUserDeleteUser() throws Exception {
+        //Giver & //When & //Then
+        mockMvc.perform(delete("/v1/users/{id}", 1).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
     }
 
     @Test

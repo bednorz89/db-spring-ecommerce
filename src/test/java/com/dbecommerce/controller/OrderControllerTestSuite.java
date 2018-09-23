@@ -46,6 +46,14 @@ public class OrderControllerTestSuite {
     }
 
     @Test
+    @WithMockUser(roles = {"USER"})
+    public void shouldNotUserFetchAllOrders() throws Exception {
+        //Given & //When & //Then
+        mockMvc.perform(get("/v1/orders").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithMockUser(roles = {"ADMIN"})
     public void shouldAdminFetchOrder() throws Exception {
         //Given & //When & //Then

@@ -4,6 +4,7 @@ import com.dbecommerce.domain.Order;
 import com.dbecommerce.domain.Role;
 import com.dbecommerce.domain.dto.OrderDto;
 import com.dbecommerce.domain.dto.PaymentDto;
+import com.dbecommerce.exception.AccessForbiddenException;
 import com.dbecommerce.mapper.OrderMapper;
 import com.dbecommerce.mapper.PaymentMapper;
 import com.dbecommerce.service.OrderService;
@@ -47,30 +48,28 @@ public class OrderController {
 
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<OrderDto> getOrder(@PathVariable Long id) {
+    public ResponseEntity<OrderDto> getOrder(@PathVariable Long id) throws AccessForbiddenException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         Set<String> roles = authentication.getAuthorities().stream()
                 .map(r -> r.getAuthority())
                 .collect(Collectors.toSet());
         Order order = orderService.getOrder(id);
-        if ((roles.contains(Role.ROLE_USER.name()) && order.getUser().equals(userService.getUserByUsername(username))) || roles.contains(Role.ROLE_ADMIN.name())) {
-            return new ResponseEntity<>(orderMapper.mapToOrderDto(order), HttpStatus.FOUND);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if ((roles.contains(Role.ROLE_USER.name()) && !order.getUser().equals(userService.getUserByUsername(username)))) {
+            throw new AccessForbiddenException(username);
         }
+        return new ResponseEntity<>(orderMapper.mapToOrderDto(order), HttpStatus.FOUND);
     }
 
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/{id}/payments", method = RequestMethod.PUT)
-    public ResponseEntity<PaymentDto> payForOrder(@PathVariable Long id) {
+    public ResponseEntity<PaymentDto> payForOrder(@PathVariable Long id) throws AccessForbiddenException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        if (orderService.getOrder(id).getUser().getUsername().equals(username)) {
-            return new ResponseEntity<>(paymentMapper.mapToPaymentDto(paymentService.payForOrder(id)), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if (!orderService.getOrder(id).getUser().getUsername().equals(username)) {
+            throw new AccessForbiddenException(username);
         }
+        return new ResponseEntity<>(paymentMapper.mapToPaymentDto(paymentService.payForOrder(id)), HttpStatus.OK);
     }
 
 }

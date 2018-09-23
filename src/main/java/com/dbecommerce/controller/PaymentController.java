@@ -3,6 +3,7 @@ package com.dbecommerce.controller;
 import com.dbecommerce.domain.Order;
 import com.dbecommerce.domain.Role;
 import com.dbecommerce.domain.dto.PaymentDto;
+import com.dbecommerce.exception.AccessForbiddenException;
 import com.dbecommerce.mapper.PaymentMapper;
 import com.dbecommerce.service.OrderService;
 import com.dbecommerce.service.PaymentService;
@@ -52,18 +53,17 @@ public class PaymentController {
 
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<PaymentDto> getPayment(@PathVariable Long id) {
+    public ResponseEntity<PaymentDto> getPayment(@PathVariable Long id) throws AccessForbiddenException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         Set<String> roles = authentication.getAuthorities().stream()
                 .map(r -> r.getAuthority())
                 .collect(Collectors.toSet());
         Order order = orderService.findOrderByPayment(paymentService.getPayment(id));
-        if ((roles.contains(Role.ROLE_USER.name()) && order.getUser().equals(userService.getUserByUsername(username))) || roles.contains(Role.ROLE_ADMIN.name())) {
-            return new ResponseEntity<>(paymentMapper.mapToPaymentDto(paymentService.getPayment(id)), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if ((roles.contains(Role.ROLE_USER.name()) && !order.getUser().equals(userService.getUserByUsername(username)))) {
+            throw new AccessForbiddenException(username);
         }
+        return new ResponseEntity<>(paymentMapper.mapToPaymentDto(paymentService.getPayment(id)), HttpStatus.OK);
     }
 
 }

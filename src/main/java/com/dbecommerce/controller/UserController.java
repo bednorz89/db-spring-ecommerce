@@ -4,6 +4,7 @@ import com.dbecommerce.domain.Role;
 import com.dbecommerce.domain.dto.ItemDto;
 import com.dbecommerce.domain.dto.OrderDto;
 import com.dbecommerce.domain.dto.UserDto;
+import com.dbecommerce.exception.AccessForbiddenException;
 import com.dbecommerce.mapper.ItemMapper;
 import com.dbecommerce.mapper.OrderMapper;
 import com.dbecommerce.mapper.UserMapper;
@@ -59,17 +60,16 @@ public class UserController {
 
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @RequestMapping(method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto) throws AccessForbiddenException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         Set<String> roles = authentication.getAuthorities().stream()
                 .map(r -> r.getAuthority())
                 .collect(Collectors.toSet());
         if (roles.contains(Role.ROLE_USER.name()) && !username.equals(userDto.getUsername())) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        } else {
-            return new ResponseEntity<>(userMapper.mapToUserDto(userService.saveUser(userMapper.mapToUser(userDto))), HttpStatus.OK);
+            throw new AccessForbiddenException(username);
         }
+        return new ResponseEntity<>(userMapper.mapToUserDto(userService.saveUser(userMapper.mapToUser(userDto))), HttpStatus.OK);
     }
 
     @Secured({"ROLE_ADMIN"})
